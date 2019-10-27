@@ -14,15 +14,13 @@ optdepends=('uboot-tools')
 provides=("uboot-beikeyun-p1=${pkgver}")
 conflicts=('uboot-rock64')
 install=${pkgname}.install
-backup = ('boot/extlinux/extlinux.conf')
+backup=('boot/extlinux/extlinux.conf')
 source=("https://apt.armbian.com/pool/main/l/linux-u-boot-rock64-default/${_imagename}"
         'linux-uboot-beikeyun-p1.install'
         'extlinux.conf')
 md5sums=('020521f15f74998bace70e6aca9a3f39'
-         '33f8e4c8205426df33440f73300a7643'
-         'a549aae0c10ec73d3ab81cfba5c8ae26'
-         'c879cb52bf49f467c82c403670962b96'
-         '1d2441c9604477792961b82ea4154455')
+         '10ec1093213bbe73204f10e8fd695841'
+         'c807bf9bcf3c539e6cad8f57d408f583')
 noextract=("${_imagename}")
 
 

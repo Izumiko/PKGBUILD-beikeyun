@@ -30,10 +30,10 @@ source=("https://apt.armbian.com/pool/main/l/linux-4.4.192-rockchip64/${_imagena
         'linux-aarch64-beikeyun-p1.install')
 sha256sums=('e74a0fc690aeddea6f42b1fbac9b7008ece87d245daf8dd4f3d5820fdc77f8a4'
             'e8d507c76513fc70b50a0a3a90cb43003fab95e3eb842b6f017b4e346e60da8a'
-            'a8e4b004e70bf7a35387fe1074f41fe799a4a025527596a3559843172fb9ada3'
+            'ff1c5a5ca92fb230aa35f3633a8cdcdc3b021e2c899c21a697550c46442ce695'
             '377833b7dc20b9eb3d30dfda3d6c6eb331e2a1cb4d436e4c08a4c760aad01128'
             '4e0abd767f338287c1cf589e6e093fb01d3a85d84175f0d5673cec3954343428'
-            'fca4957904e8f80135a12c68f4ffc2452f453654a4d25e9811d4c327dc6c0f69')
+            '6ba05007d802a41b0bd6272c71acb99948106ef5e10461fcc1c22fda9c824d43')
 noextract=("${_imagename}")
 
 
