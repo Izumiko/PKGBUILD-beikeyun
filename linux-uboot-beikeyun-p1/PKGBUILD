@@ -4,7 +4,7 @@ _debver=5.98
 _imagename=linux-u-boot-rock64_${_debver}_arm64.deb
 
 pkgname=linux-uboot-beikeyun-p1
-pkgver=${_debver}
+pkgver=2017.09_5.98
 pkgrel=1
 pkgdesc="U-Boot loader and files for Beikeyun P1. This package will fetch a Debian built uboot from armbian."
 arch=('aarch64')
@@ -31,6 +31,17 @@ prepare() {
   # extract the prebuilt kernel files
   ar xf "${_imagename}"
   tar xf data.tar.xz
+  tar xf control.tar.xz
+}
+
+pkgver() {
+  cd "${srcdir}"
+  ubver=$(cat control | grep Description | cut -d' ' -f4)
+  if [ x$ubver != x"" ]; then
+    printf "%s_%s" ${ubver} ${_debver}
+  else
+    printf "%s" ${_debver}
+  fi
 }
 
 package() {
