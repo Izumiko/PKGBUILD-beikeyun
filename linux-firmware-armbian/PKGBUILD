@@ -1,5 +1,4 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
-PACKAGER='Izumiko <yosoro@outlook.com>'
 
 _debver=5.98
 _imagename="armbian-firmware_${_debver}_all.deb"
@@ -16,7 +15,7 @@ options=('!strip')
 provides=("linux-firmware=${pkgver}")
 conflicts=('linux-firmware')
 source=("https://apt.armbian.com/pool/main/a/armbian-firmware/${_imagename}")
-sha256sums=('FFE19E5E5503B68F1E068621C9AD4AFFDE3AFC9D85CEB2585F9186F13A6F0DDF')
+sha256sums=('ffe19e5e5503b68f1e068621c9ad4affde3afc9d85ceb2585f9186f13a6f0ddf')
 noextract=("${_imagename}")
 
 

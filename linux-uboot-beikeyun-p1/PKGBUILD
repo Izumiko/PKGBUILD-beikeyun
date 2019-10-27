@@ -1,4 +1,4 @@
-PACKAGER='Izumiko <yosoro@outlook.com>'
+# PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
 _debver=5.98
 _imagename=linux-u-boot-rock64_${_debver}_arm64.deb

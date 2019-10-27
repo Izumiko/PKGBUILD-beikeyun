@@ -1,7 +1,6 @@
 # AArch64 multi-platform
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 # Kernel maintainer: Ayufan <ayufan@ayufan.eu> 
-PACKAGER='Izumiko <yosoro@outlook.com>'
 
 _debver=5.98
 _kv=4.4.192
