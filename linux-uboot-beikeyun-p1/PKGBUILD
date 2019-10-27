@@ -1,9 +1,10 @@
 PACKAGER='Izumiko <yosoro@outlook.com>'
 
-_imagename=linux-u-boot-rock64_5.98_arm64.deb
+_debver=5.98
+_imagename=linux-u-boot-rock64_${_debver}_arm64.deb
 
 pkgname=linux-uboot-beikeyun-p1
-pkgver=2017.09
+pkgver=${_debver}
 pkgrel=1
 pkgdesc="U-Boot loader and files for Beikeyun P1. This package will fetch a Debian built uboot from armbian."
 arch=('aarch64')
@@ -40,7 +41,7 @@ package() {
   cp extlinux.conf ${pkgdir}/boot/extlinux/
   
   # copy uboot image files
-  cp usr/lib/linux-u-boot-rock64_5.98_arm64/* "${pkgdir}/boot/"
+  cp usr/lib/linux-u-boot-rock64_*_arm64/* "${pkgdir}/boot/"
 
 }
 

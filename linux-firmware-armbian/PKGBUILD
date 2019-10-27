@@ -1,12 +1,13 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 PACKAGER='Izumiko <yosoro@outlook.com>'
 
-_imagename="armbian-firmware_5.98_all.deb"
+_debver=5.98
+_imagename="armbian-firmware_${_debver}_all.deb"
 
 pkgdesc="Linux firmware from armbian."
 pkgbase=linux-firmware-armbian
 pkgname=linux-firmware
-pkgver=5.98
+pkgver=${_debver}
 pkgrel=1
 arch=('any')
 url="https://apt.armbian.com/pool/main/a/armbian-firmware/"
