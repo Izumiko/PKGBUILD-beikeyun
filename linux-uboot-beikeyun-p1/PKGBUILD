@@ -36,7 +36,7 @@ prepare() {
 
 pkgver() {
   cd "${srcdir}"
-  ubver=$(cat control | grep Description | cut -d' ' -f4)
+  ubver=$(cat control | grep -P '\d{4}\.\d{2}' -o)
   if [ x$ubver != x"" ]; then
     printf "%s_%s" ${ubver} ${_debver}
   else
