@@ -1,0 +1,39 @@
+# PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
+PACKAGER='Izumiko <yosoro@outlook.com>'
+
+_imagename="armbian-firmware_5.98_all.deb"
+
+pkgdesc="Linux firmware from armbian."
+pkgbase=linux-firmware-armbian
+pkgname=linux-firmware
+pkgver=5.98
+pkgrel=1
+arch=('any')
+url="https://apt.armbian.com/pool/main/a/armbian-firmware/"
+license=('GPL2')
+options=('!strip')
+provides=("linux-firmware=${pkgver}")
+conflicts=('linux-firmware')
+source=("https://apt.armbian.com/pool/main/a/armbian-firmware/${_imagename}")
+sha256sums=('FFE19E5E5503B68F1E068621C9AD4AFFDE3AFC9D85CEB2585F9186F13A6F0DDF')
+noextract=("${_imagename}")
+
+
+prepare() {
+  cd "${srcdir}"
+
+  # extract the prebuilt kernel files
+  mkdir -p linux-firmware/
+  cp "${_imagename}" linux-firmware/
+  cd linux-firmware/
+  ar xf "${_imagename}"
+  tar -xf data.tar.xz
+}
+
+package() {
+
+  cd "${srcdir}/linux-firmware"
+  mkdir -p "${pkgdir}/usr"
+  cp -r lib "${pkgdir}/usr"
+
+}

@@ -1,0 +1,97 @@
+# AArch64 multi-platform
+# PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
+# Kernel maintainer: Ayufan <ayufan@ayufan.eu> 
+PACKAGER='Izumiko <yosoro@outlook.com>'
+
+_kernver=4.4.192-rockchip64
+_imagename=linux-image-rockchip64_5.98_arm64.deb
+
+pkgname=linux-aarch64-beikeyun-p1
+pkgver=4.4.192
+pkgrel=1
+pkgdesc="The Linux Kernel and modules - AArch64 for Beikeyun P1. This package will fetch a Debian built kernel from armbian."
+arch=('aarch64')
+url="https://apt.armbian.com/pool/main/l/linux-4.4.192-rockchip64/"
+license=('GPL')
+options=('!strip')
+depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
+optdepends=('uboot-tools')
+provides=("linux=${pkgver}" "linux-aarch64=${pkgver}")
+conflicts=('linux' 'linux-aarch64' 'linux-arch64-rc')
+replaces=('linux-armv8')
+backup=("etc/mkinitcpio.d/${pkgname}.preset")
+install=${pkgname}.install
+
+source=("https://apt.armbian.com/pool/main/l/linux-4.4.192-rockchip64/${_imagename}"
+        'https://github.com/hanwckf/build-beikeyun/raw/v2019-9-16-1/dtbs/4.4-bsp/headless/rk3328-beikeyun.dtb'
+        'linux-aarch64.preset'
+        '60-linux-aarch64.hook'
+        '90-linux-aarch64.hook'
+        'linux-aarch64-beikeyun-p1.install')
+sha256sums=('e74a0fc690aeddea6f42b1fbac9b7008ece87d245daf8dd4f3d5820fdc77f8a4'
+            'e8d507c76513fc70b50a0a3a90cb43003fab95e3eb842b6f017b4e346e60da8a'
+            'a8e4b004e70bf7a35387fe1074f41fe799a4a025527596a3559843172fb9ada3'
+            '377833b7dc20b9eb3d30dfda3d6c6eb331e2a1cb4d436e4c08a4c760aad01128'
+            '4e0abd767f338287c1cf589e6e093fb01d3a85d84175f0d5673cec3954343428'
+            'fca4957904e8f80135a12c68f4ffc2452f453654a4d25e9811d4c327dc6c0f69')
+noextract=("${_imagename}")
+
+
+prepare() {
+  cd "${srcdir}"
+
+  # extract the prebuilt kernel files
+  ar xf "${_imagename}"
+  tar -xf data.tar.xz
+}
+
+package() {
+  cd "${srcdir}"
+
+  # copy boot files  
+  cp -r boot "${pkgdir}/boot"
+  cd ${pkgdir}/boot
+  touch .next
+  ln -sf vmlinuz-${_kernver} Image
+  ln -sf /usr/lib/linux-image-rockchip64 dtb
+  cd "${srcdir}"
+  
+  #install dtb file for Beikeyun P1
+  install -D -m644 "${srcdir}/rk3328-beikeyun.dtb" "${pkgdir}/boot/rk3328-beikeyun.dtb"
+
+  # copy kernel files
+  mkdir -p "${pkgdir}/usr"
+  mkdir -p "${pkgdir}/lib"
+  cp -r usr "${pkgdir}/"
+  cp -r lib "${pkgdir}/"
+  
+  # set correct depmod command for install
+  sed \
+    -e  "s/KERNEL_NAME=.*/KERNEL_NAME=${_kernelname}/g" \
+    -e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" \
+    -i "${startdir}/${pkgname}.install"
+
+  # install mkinitcpio preset file for kernel
+  install -D -m644 "${srcdir}/linux-aarch64.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset"
+  sed \
+    -e "1s|'linux.*'|'${pkgname}'|" \
+    -e "s|ALL_kver=.*|ALL_kver=\"${_kernver}\"|" \
+    -i "${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset"
+
+  # install pacman hook for initramfs regeneration
+  install -D -m644 "${srcdir}/60-linux-aarch64.hook" "${pkgdir}/usr/share/libalpm/hooks/60-${pkgname}.hook"
+  install -D -m644 "${srcdir}/90-linux-aarch64.hook" "${pkgdir}/usr/share/libalpm/hooks/90-${pkgname}.hook"
+  sed "s|%PKGNAME%|${pkgname}|g" -i "${pkgdir}/usr/share/libalpm/hooks/60-${pkgname}.hook"
+  sed "s|%PKGVER%|${_kernver}|g" -i "${pkgdir}/usr/share/libalpm/hooks/60-${pkgname}.hook"
+  sed "s|%PKGNAME%|${pkgname}|g" -i "${pkgdir}/usr/share/libalpm/hooks/90-${pkgname}.hook"
+
+  # Now we call depmod...
+  depmod -b "$pkgdir" -F "boot/System.map-${_kernver}" "$_kernver"
+
+  # move module tree /lib -> /usr/lib
+  mkdir -p "${pkgdir}/usr"
+  cp -r "$pkgdir/lib" "$pkgdir/usr"
+  rm -rf "$pkgdir/lib"
+
+}
+

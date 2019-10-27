@@ -1,0 +1,48 @@
+PACKAGER='Izumiko <yosoro@outlook.com>'
+
+_imagename=linux-u-boot-rock64_5.98_arm64.deb
+
+pkgname=linux-uboot-beikeyun-p1
+pkgver=2017.09
+pkgrel=1
+pkgdesc="U-Boot loader and files for Beikeyun P1. This package will fetch a Debian built uboot from armbian."
+arch=('aarch64')
+url="https://apt.armbian.com/pool/main/l/linux-u-boot-rock64-default/"
+license=('GPL')
+options=('!strip')
+optdepends=('uboot-tools')
+provides=("uboot-beikeyun-p1=${pkgver}")
+conflicts=('uboot-rock64')
+install=${pkgname}.install
+backup = ('boot/extlinux/extlinux.conf')
+source=("https://apt.armbian.com/pool/main/l/linux-u-boot-rock64-default/${_imagename}"
+        'linux-uboot-beikeyun-p1.install'
+        'extlinux.conf')
+md5sums=('020521f15f74998bace70e6aca9a3f39'
+         '33f8e4c8205426df33440f73300a7643'
+         'a549aae0c10ec73d3ab81cfba5c8ae26'
+         'c879cb52bf49f467c82c403670962b96'
+         '1d2441c9604477792961b82ea4154455')
+noextract=("${_imagename}")
+
+
+prepare() {
+  cd "${srcdir}"
+
+  # extract the prebuilt kernel files
+  ar xf "${_imagename}"
+  tar xf data.tar.xz
+}
+
+package() {
+  cd "${srcdir}"
+
+  # copy extlinux config
+  mkdir -p "${pkgdir}/boot/extlinux"
+  cp extlinux.conf ${pkgdir}/boot/extlinux/
+  
+  # copy uboot image files
+  cp usr/lib/linux-u-boot-rock64_5.98_arm64/* "${pkgdir}/boot/"
+
+}
+
