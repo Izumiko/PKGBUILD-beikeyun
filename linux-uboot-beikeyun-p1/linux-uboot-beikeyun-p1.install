@@ -1,4 +1,8 @@
 flash_uboot () {
+  if [ -f /boot/.skip_flash_uboot ]; then
+    echo "Skip flashing uboot, you need flash it mannually."
+    return 0
+  fi
   echo "A new U-Boot version needs to be flashed onto /dev/mmcblk0."
   echo "Do you want to do this now? [y|N]"
   read -r shouldwe
