@@ -51,6 +51,7 @@ if [ $? -gt 0 ]; then
   sed \
     -e "s|_debver=.*|_debver=${debver}|" \
     -e "s|_kv=.*|_kv=${kerver}|" \
+    -e "s|pkgrel=.*|pkgrel=1|" \
     -i "linux-aarch64-beikeyun-p1/PKGBUILD"
   pushd linux-aarch64-beikeyun-p1
   updpkgsums
@@ -69,6 +70,7 @@ if [ $? -gt 0 ]; then
   echo 'U-boot update available'
   sed \
     -e "s|_debver=.*|_debver=${debver}|" \
+    -e "s|pkgrel=.*|pkgrel=1|" \
     -i "linux-uboot-beikeyun-p1/PKGBUILD"
   pushd linux-uboot-beikeyun-p1
   updpkgsums
@@ -87,6 +89,7 @@ if [ $? -gt 0 ]; then
   echo 'Firmware update available'
   sed \
     -e "s|_debver=.*|_debver=${debver}|" \
+    -e "s|pkgrel=.*|pkgrel=1|" \
     -i "linux-firmware-armbian/PKGBUILD"
   pushd linux-firmware-armbian
   updpkgsums
