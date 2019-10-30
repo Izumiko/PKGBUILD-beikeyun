@@ -4,10 +4,9 @@ _debver=5.98
 _imagename="armbian-firmware_${_debver}_all.deb"
 
 pkgdesc="Linux firmware from armbian."
-pkgbase=linux-firmware-armbian
-pkgname=linux-firmware
+pkgname=linux-firmware-armbian
 pkgver=${_debver}
-pkgrel=1
+pkgrel=2
 arch=('any')
 url="https://apt.armbian.com/pool/main/a/armbian-firmware/"
 license=('GPL2')
