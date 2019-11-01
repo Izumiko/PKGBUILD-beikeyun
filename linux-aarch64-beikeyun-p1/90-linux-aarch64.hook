@@ -1,7 +1,7 @@
 [Trigger]
-Type = Path
 Operation = Install
 Operation = Upgrade
+Type = File
 Target = boot/Image
 Target = boot/vmlinuz-*
 Target = usr/lib/initcpio/*

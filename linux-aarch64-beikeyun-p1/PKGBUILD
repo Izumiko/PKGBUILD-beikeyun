@@ -32,8 +32,8 @@ source=("https://apt.armbian.com/pool/main/l/linux-${_kv}-rockchip64/${_imagenam
 sha256sums=('e74a0fc690aeddea6f42b1fbac9b7008ece87d245daf8dd4f3d5820fdc77f8a4'
             'e8d507c76513fc70b50a0a3a90cb43003fab95e3eb842b6f017b4e346e60da8a'
             'ff1c5a5ca92fb230aa35f3633a8cdcdc3b021e2c899c21a697550c46442ce695'
-            '377833b7dc20b9eb3d30dfda3d6c6eb331e2a1cb4d436e4c08a4c760aad01128'
-            '4e0abd767f338287c1cf589e6e093fb01d3a85d84175f0d5673cec3954343428'
+            '6e5459a508d26fd96ac8f675a537f21ab3a2624adc1e99ee64944b2db4c911f5'
+            '68ad831790023a7606be8ba15038c668bb989ee7b8a34b8c6c0f1da6a9f8a57b'
             '6ba05007d802a41b0bd6272c71acb99948106ef5e10461fcc1c22fda9c824d43')
 noextract=("${_imagename}")
 
