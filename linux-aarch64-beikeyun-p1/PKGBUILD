@@ -2,10 +2,10 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 # Kernel maintainer: Ayufan <ayufan@ayufan.eu> 
 
-_debver=19.11.3
-_kv=4.4.198
+_debver=5.98
+_kv=4.4.192
 _kernver=${_kv}-rockchip64
-_imagename=linux-image-legacy-rockchip64_${_debver}_arm64.deb
+_imagename=linux-image-rockchip64_${_debver}_arm64.deb
 
 pkgname=linux-aarch64-beikeyun-p1
 pkgver=${_kv}
@@ -29,7 +29,7 @@ source=("https://apt.armbian.com/pool/main/l/linux-${_kv}-rockchip64/${_imagenam
         '60-linux-aarch64.hook'
         '90-linux-aarch64.hook'
         'linux-aarch64-beikeyun-p1.install')
-sha256sums=('c61d0bf5a4794e84b095a1209050769f54ab526f96e356f320a172841efb475f'
+sha256sums=('e74a0fc690aeddea6f42b1fbac9b7008ece87d245daf8dd4f3d5820fdc77f8a4'
             'e8d507c76513fc70b50a0a3a90cb43003fab95e3eb842b6f017b4e346e60da8a'
             'ff1c5a5ca92fb230aa35f3633a8cdcdc3b021e2c899c21a697550c46442ce695'
             '6e5459a508d26fd96ac8f675a537f21ab3a2624adc1e99ee64944b2db4c911f5'
