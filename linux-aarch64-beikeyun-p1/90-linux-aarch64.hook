@@ -4,6 +4,7 @@ Operation = Upgrade
 Type = File
 Target = boot/Image
 Target = boot/vmlinuz-*
+Target = boot/vmlinux-*
 Target = usr/lib/initcpio/*
 
 [Action]

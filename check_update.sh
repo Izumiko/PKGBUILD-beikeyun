@@ -1,7 +1,7 @@
 #!/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/bin
 
-source="https://apt.armbian.com/"
+source="https://beta.armbian.com/"
 #source="https://mirrors.tuna.tsinghua.edu.cn/armbian/"
 pkglist="${source}dists/buster/main/binary-arm64/Packages"
 
@@ -39,9 +39,9 @@ vercomp () {
 }
 
 check_linux_image () {
-debver=$(cat Packages |grep "Package: linux-image-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1
+debver=$(cat Packages |grep "Package: linux-image-legacy-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1
 )
-debfile=$(cat Packages |grep "Package: linux-image-rockchip64" -A 10|grep ${debver}|cut -f2 -d' '|tail -n 1)
+debfile=$(cat Packages |grep "Package: linux-image-legacy-rockchip64" -A 10|grep ${debver}|cut -f2 -d' '|tail -n 1)
 kerver=$(echo ${debfile}|cut -d' ' -f4|cut -d'-' -f2)
 pkgver=$(grep _debver linux-aarch64-beikeyun-p1/PKGBUILD | cut -f2 -d'=' | head -n 1)
 
@@ -62,7 +62,7 @@ fi
 
 }
 check_uboot () {
-debver=$(cat Packages |grep "Package: linux-u-boot-rock64-default" -A 10|grep Version|cut -f2 -d' '|sort -r|head -n 1)
+debver=$(cat Packages |grep "Package: linux-u-boot-rock64-legacy" -A 10|grep Version|cut -f2 -d' '|sort -r|head -n 1)
 pkgver=$(grep _debver linux-uboot-beikeyun-p1/PKGBUILD | cut -f2 -d'=' | head -n 1)
 
 vercomp $pkgver $debver

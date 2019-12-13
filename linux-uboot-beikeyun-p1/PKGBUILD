@@ -1,14 +1,14 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
-_debver=5.98
-_imagename=linux-u-boot-rock64_${_debver}_arm64.deb
+_debver=19.11.3.346
+_imagename=linux-u-boot-legacy-rock64_${_debver}_arm64.deb
 
 pkgname=linux-uboot-beikeyun-p1
-pkgver=2017.09_5.98
-pkgrel=2
+pkgver=2017.09_19.11.3.346
+pkgrel=1
 pkgdesc="U-Boot loader and files for Beikeyun P1. This package will fetch a Debian built uboot from armbian."
 arch=('aarch64')
-url="https://apt.armbian.com/pool/main/l/linux-u-boot-rock64-default/"
+url="https://beta.armbian.com/pool/main/l/linux-u-boot-rock64-legacy/"
 license=('GPL')
 options=('!strip')
 optdepends=('uboot-tools')
@@ -16,10 +16,10 @@ provides=("uboot-beikeyun-p1=${pkgver}")
 conflicts=('uboot-rock64')
 install=${pkgname}.install
 backup=('boot/extlinux/extlinux.conf')
-source=("https://apt.armbian.com/pool/main/l/linux-u-boot-rock64-default/${_imagename}"
+source=("https://beta.armbian.com/pool/main/l/linux-u-boot-rock64-legacy/${_imagename}"
         'linux-uboot-beikeyun-p1.install'
         'extlinux.conf')
-md5sums=('020521f15f74998bace70e6aca9a3f39'
+md5sums=('adbccbfce7e81f9da41aa6d949077d19'
          '75f122140ce31c9724105bd030b8c289'
          'c807bf9bcf3c539e6cad8f57d408f583')
 noextract=("${_imagename}")
@@ -49,10 +49,10 @@ package() {
 
   # copy extlinux config
   mkdir -p "${pkgdir}/boot/extlinux"
-  cp extlinux.conf ${pkgdir}/boot/extlinux/
+  cp "${srcdir}/extlinux.conf" "${pkgdir}/boot/extlinux/"
   
   # copy uboot image files
-  cp usr/lib/linux-u-boot-rock64_*_arm64/* "${pkgdir}/boot/"
+  cp usr/lib/linux-u-boot-legacy-rock64_*_arm64/* "${pkgdir}/boot/"
 
 }
 

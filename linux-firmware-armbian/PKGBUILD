@@ -1,20 +1,20 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
-_debver=5.98
+_debver=19.11.3.342
 _imagename="armbian-firmware_${_debver}_all.deb"
 
 pkgdesc="Linux firmware from armbian."
 pkgname=linux-firmware-armbian
 pkgver=${_debver}
-pkgrel=2
+pkgrel=1
 arch=('any')
-url="https://apt.armbian.com/pool/main/a/armbian-firmware/"
+url="https://beta.armbian.com/pool/main/a/armbian-firmware/"
 license=('GPL2')
 options=('!strip')
 provides=("linux-firmware=${pkgver}")
 conflicts=('linux-firmware')
-source=("https://apt.armbian.com/pool/main/a/armbian-firmware/${_imagename}")
-sha256sums=('ffe19e5e5503b68f1e068621c9ad4affde3afc9d85ceb2585f9186f13a6f0ddf')
+source=("https://beta.armbian.com/pool/main/a/armbian-firmware/${_imagename}")
+sha256sums=('d9aa2884e73fa4de363ecb2e5536353204fb8269aafb1484b41c79734fcfa2f0')
 noextract=("${_imagename}")
 
 
@@ -22,17 +22,12 @@ prepare() {
   cd "${srcdir}"
 
   # extract the prebuilt kernel files
-  mkdir -p linux-firmware/
-  cp "${_imagename}" linux-firmware/
-  cd linux-firmware/
   ar xf "${_imagename}"
   tar -xf data.tar.xz
 }
 
 package() {
-
-  cd "${srcdir}/linux-firmware"
   mkdir -p "${pkgdir}/usr"
-  cp -r lib "${pkgdir}/usr"
+  cp -r "${srcdir}/lib" "${pkgdir}/usr/"
 
 }
