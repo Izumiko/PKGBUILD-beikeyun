@@ -1,52 +1,64 @@
 # AArch64 multi-platform
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
-_debver=19.11.3.346
-_kv=4.4.198
-_kernver=${_kv}-rockchip64
-_imagename=linux-image-legacy-rockchip64_${_debver}_arm64.deb
-_kernelname=vmlinux
-
-pkgname=linux-aarch64-beikeyun-p1
-pkgver=${_kv}
+pkgname=linux-aarch64-legacy-beikeyun-p1
+pkgver=4.4.210_19.11.9.019
 pkgrel=1
 pkgdesc="The Linux Kernel and modules - AArch64 for Beikeyun P1. This package will fetch a Debian built kernel from armbian."
 arch=('aarch64')
-url="https://beta.armbian.com/pool/main/l/linux-${_kv}-rockchip64/"
+url="https://beta.armbian.com/pool/main/l/"
 license=('GPL')
 options=('!strip')
 depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
 optdepends=('uboot-tools')
 provides=("linux=${pkgver}" "linux-aarch64=${pkgver}")
-conflicts=('linux' 'linux-aarch64' 'linux-aarch64-rc')
+conflicts=('linux' 'linux-aarch64' 'linux-aarch64-rc' 'linux-aarch64-beikeyun-p1')
 replaces=('linux-armv8')
 backup=("etc/mkinitcpio.d/${pkgname}.preset")
 install=${pkgname}.install
 
-source=("https://beta.armbian.com/pool/main/l/linux-${_kv}-rockchip64/${_imagename}"
-        'https://github.com/hanwckf/build-beikeyun/raw/v2019-9-16-1/dtbs/4.4-bsp/headless/rk3328-beikeyun.dtb'
+source=('https://github.com/hanwckf/build-beikeyun/raw/v2019-9-16-1/dtbs/4.4-bsp/headless/rk3328-beikeyun.dtb'
         'linux-aarch64.preset'
         '60-linux-aarch64.hook'
         '90-linux-aarch64.hook'
-        'linux-aarch64-beikeyun-p1.install')
-sha256sums=('c998685b60901554f93f8c2dc3fdd22b85af76cff231ebd1bad8bf6d9ff8c72f'
-            'e8d507c76513fc70b50a0a3a90cb43003fab95e3eb842b6f017b4e346e60da8a'
-            'ff1c5a5ca92fb230aa35f3633a8cdcdc3b021e2c899c21a697550c46442ce695'
+        'linux-aarch64-legacy-beikeyun-p1.install')
+sha256sums=('e8d507c76513fc70b50a0a3a90cb43003fab95e3eb842b6f017b4e346e60da8a'
+            '418ed75bc8f03f401dccd28adae4a22e70fe9e48f1b26dcf7e6857d6f0d6e8b3'
             '6e5459a508d26fd96ac8f675a537f21ab3a2624adc1e99ee64944b2db4c911f5'
             'ece886d2313bc47934c5782c8ff6034348cf2ff38ad2f3fdbabef592fc8d54eb'
-            '6ba05007d802a41b0bd6272c71acb99948106ef5e10461fcc1c22fda9c824d43')
-noextract=("${_imagename}")
+            '47d5d10115cce21efe87044aa5eb85ab324bef3706d3c5dd4aea6cd49bfe92b0')
 
 
 prepare() {
   cd "${srcdir}"
+  wget -O Packages "https://beta.armbian.com/dists/buster/main/binary-arm64/Packages"
+  debver=$(cat Packages |grep "Package: linux-image-legacy-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
+  debfile=$(cat Packages |grep "Package: linux-image-legacy-rockchip64" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
+  kerver=$(echo ${debfile}|cut -d'-' -f2)
+  md5sum=$(cat Packages |grep "Package: linux-image-legacy-rockchip64" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
+  imagename=$(echo $debfile|cut -f5 -d'/')
+  
+  echo "${md5sum}  ${imagename}" > pkg.md5
+  echo "${kerver}_${debver}" > pkgver
+  
+  #download package
+  wget -O ${imagename} "https://beta.armbian.com/${debfile}"
+  md5sum -c pkg.md5 || exit -1
+  rm Packages pkg.md5
 
   # extract the prebuilt kernel files
-  ar xf "${_imagename}"
+  ar xf "${imagename}"
   tar -xf data.tar.xz
+  rm ${imagename} data.tar.xz
+}
+
+pkgver() {
+  pkgver=$(cat ${srcdir}/pkgver)
+  printf "%s" ${pkgver}
 }
 
 package() {
+  kerver=$(echo ${pkgver}|cut -f1 -d'_')
   cd "${srcdir}"
 
   # copy boot files  
@@ -67,27 +79,24 @@ package() {
   cp -r lib "${pkgdir}/"
   
   # set correct depmod command for install
-  sed \
-    -e  "s/KERNEL_NAME=.*/KERNEL_NAME=${_kernelname}/g" \
-    -e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" \
-    -i "${startdir}/${pkgname}.install"
+  sed -e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${kerver}-rockchip64/g" -i "${startdir}/${pkgname}.install"
 
   # install mkinitcpio preset file for kernel
   install -D -m644 "${srcdir}/linux-aarch64.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset"
   sed \
     -e "1s|'linux.*'|'${pkgname}'|" \
-    -e "s|ALL_kver=.*|ALL_kver=\"${_kernver}\"|" \
+    -e "s|ALL_kver=.*|ALL_kver=\"${kerver}-rockchip64\"|" \
     -i "${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset"
 
   # install pacman hook for initramfs regeneration
   install -D -m644 "${srcdir}/60-linux-aarch64.hook" "${pkgdir}/usr/share/libalpm/hooks/60-${pkgname}.hook"
   install -D -m644 "${srcdir}/90-linux-aarch64.hook" "${pkgdir}/usr/share/libalpm/hooks/90-${pkgname}.hook"
   sed "s|%PKGNAME%|${pkgname}|g" -i "${pkgdir}/usr/share/libalpm/hooks/60-${pkgname}.hook"
-  sed "s|%PKGVER%|${_kernver}|g" -i "${pkgdir}/usr/share/libalpm/hooks/60-${pkgname}.hook"
+  sed "s|%PKGVER%|${kerver}-rockchip64|g" -i "${pkgdir}/usr/share/libalpm/hooks/60-${pkgname}.hook"
   sed "s|%PKGNAME%|${pkgname}|g" -i "${pkgdir}/usr/share/libalpm/hooks/90-${pkgname}.hook"
 
   # Now we call depmod...
-  depmod -b "$pkgdir" -F "boot/System.map-${_kernver}" "$_kernver"
+  depmod -b "$pkgdir" -F "boot/System.map-${kerver}-rockchip64" "${kerver}-rockchip64"
 
   # move module tree /lib -> /usr/lib
   mkdir -p "${pkgdir}/usr"

@@ -1,11 +1,8 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
-_debver=19.11.3.342
-_imagename="armbian-firmware_${_debver}_all.deb"
-
 pkgdesc="Linux firmware from armbian."
 pkgname=linux-firmware-armbian
-pkgver=${_debver}
+pkgver=19.11.9.019
 pkgrel=1
 arch=('any')
 url="https://beta.armbian.com/pool/main/a/armbian-firmware/"
@@ -13,17 +10,34 @@ license=('GPL2')
 options=('!strip')
 provides=("linux-firmware=${pkgver}")
 conflicts=('linux-firmware')
-source=("https://beta.armbian.com/pool/main/a/armbian-firmware/${_imagename}")
-sha256sums=('d9aa2884e73fa4de363ecb2e5536353204fb8269aafb1484b41c79734fcfa2f0')
-noextract=("${_imagename}")
 
 
 prepare() {
   cd "${srcdir}"
+  
+  wget -O Packages "https://beta.armbian.com/dists/buster/main/binary-arm64/Packages"
+  debver=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
+  debfile=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
+  md5sum=$(cat Packages |grep "Package: armbian-firmware$" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
+  imagename=$(echo $debfile|cut -f5 -d'/')
+  
+  echo "${md5sum}  ${imagename}" > pkg.md5
+  echo "${debver}" > pkgver
+  
+  #download package
+  wget -O ${imagename} "https://beta.armbian.com/${debfile}"
+  md5sum -c pkg.md5 || exit -1
+  rm Packages pkg.md5
 
   # extract the prebuilt kernel files
-  ar xf "${_imagename}"
+  ar xf "${imagename}"
   tar -xf data.tar.xz
+  rm ${imagename} data.tar.xz
+}
+
+pkgver() {
+  pkgver=$(cat ${srcdir}/pkgver)
+  printf "%s" ${pkgver}
 }
 
 package() {
@@ -31,3 +45,4 @@ package() {
   cp -r "${srcdir}/lib" "${pkgdir}/usr/"
 
 }
+

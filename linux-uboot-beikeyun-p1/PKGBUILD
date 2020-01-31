@@ -1,10 +1,7 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
-_debver=19.11.3.346
-_imagename=linux-u-boot-legacy-rock64_${_debver}_arm64.deb
-
-pkgname=linux-uboot-beikeyun-p1
-pkgver=2017.09_19.11.3.346
+pkgname=linux-uboot-beikeyun-p1-legacy
+pkgver=2017.09_19.11.9.019
 pkgrel=1
 pkgdesc="U-Boot loader and files for Beikeyun P1. This package will fetch a Debian built uboot from armbian."
 arch=('aarch64')
@@ -13,34 +10,46 @@ license=('GPL')
 options=('!strip')
 optdepends=('uboot-tools')
 provides=("uboot-beikeyun-p1=${pkgver}")
-conflicts=('uboot-rock64')
+conflicts=('uboot-rock64' 'linux-uboot-beikeyun-p1' 'uboot-beikeyun-p1')
 install=${pkgname}.install
 backup=('boot/extlinux/extlinux.conf')
-source=("https://beta.armbian.com/pool/main/l/linux-u-boot-rock64-legacy/${_imagename}"
-        'linux-uboot-beikeyun-p1.install'
+source=('linux-uboot-beikeyun-p1-legacy.install'
         'extlinux.conf')
-md5sums=('adbccbfce7e81f9da41aa6d949077d19'
-         '75f122140ce31c9724105bd030b8c289'
+md5sums=('75f122140ce31c9724105bd030b8c289'
          'c807bf9bcf3c539e6cad8f57d408f583')
-noextract=("${_imagename}")
-
 
 prepare() {
   cd "${srcdir}"
 
+  wget -O Packages "https://beta.armbian.com/dists/buster/main/binary-arm64/Packages"
+  debver=$(cat Packages |grep "Package: linux-u-boot-rock64-legacy" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
+  debfile=$(cat Packages |grep "Package: linux-u-boot-rock64-legacy" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
+  md5sum=$(cat Packages |grep "Package: linux-u-boot-rock64-legacy" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
+  imagename=$(echo $debfile|cut -f5 -d'/')
+  
+  echo "${md5sum}  ${imagename}" > pkg.md5
+  echo "${debver}" > pkgver
+  
+  #download package
+  wget -O ${imagename} "https://beta.armbian.com/${debfile}"
+  md5sum -c pkg.md5 || exit -1
+  rm Packages pkg.md5
+  
   # extract the prebuilt kernel files
-  ar xf "${_imagename}"
+  ar xf "${imagename}"
   tar xf data.tar.xz
   tar xf control.tar.xz
+  rm ${imagename} data.tar.xz control.tar.xz
 }
 
 pkgver() {
   cd "${srcdir}"
   ubver=$(cat control | grep -P '\d{4}\.\d{2}' -o)
+  pkgver=$(cat ${srcdir}/pkgver)
   if [ x$ubver != x"" ]; then
-    printf "%s_%s" ${ubver} ${_debver}
+    printf "%s_%s" ${ubver} ${pkgver}
   else
-    printf "%s" ${_debver}
+    printf "%s" ${pkgver}
   fi
 }
 
