@@ -1,5 +1,5 @@
-KERNEL_NAME=vmlinux
-KERNEL_VERSION=4.4.210-rockchip64
+KERNEL_NAME=vmlinuz
+KERNEL_VERSION=5.4.18-rockchip64
 
 post_install () {
   # updating module dependencies

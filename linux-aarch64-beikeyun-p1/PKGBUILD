@@ -1,8 +1,8 @@
 # AArch64 multi-platform
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
-pkgname=linux-aarch64-legacy-beikeyun-p1
-pkgver=4.4.210_19.11.9.019
+pkgname=linux-aarch64-current-beikeyun-p1
+pkgver=5.4.18_20.05.0_trunk.038
 pkgrel=1
 pkgdesc="The Linux Kernel and modules - AArch64 for Beikeyun P1. This package will fetch a Debian built kernel from armbian."
 arch=('aarch64')
@@ -17,25 +17,25 @@ replaces=('linux-armv8')
 backup=("etc/mkinitcpio.d/${pkgname}.preset")
 install=${pkgname}.install
 
-source=('https://github.com/hanwckf/build-beikeyun/raw/v2019-9-16-1/dtbs/4.4-bsp/headless/rk3328-beikeyun.dtb'
+source=('rk3328-beikeyun.dtb'
         'linux-aarch64.preset'
         '60-linux-aarch64.hook'
         '90-linux-aarch64.hook'
-        'linux-aarch64-legacy-beikeyun-p1.install')
-sha256sums=('e8d507c76513fc70b50a0a3a90cb43003fab95e3eb842b6f017b4e346e60da8a'
+        'linux-aarch64-current-beikeyun-p1.install')
+sha256sums=('94f399c3e16f3a7f22b356cd5a101599f58ed9371f9b2217c178a5be2e2acae2'
             '418ed75bc8f03f401dccd28adae4a22e70fe9e48f1b26dcf7e6857d6f0d6e8b3'
             '6e5459a508d26fd96ac8f675a537f21ab3a2624adc1e99ee64944b2db4c911f5'
             'ece886d2313bc47934c5782c8ff6034348cf2ff38ad2f3fdbabef592fc8d54eb'
-            '47d5d10115cce21efe87044aa5eb85ab324bef3706d3c5dd4aea6cd49bfe92b0')
+            '617a207cb6386056040cdcb2a946fdae5dd0ac44c702217e6f9b7c4049e38a10')
 
 
 prepare() {
   cd "${srcdir}"
   wget -O Packages "https://beta.armbian.com/dists/buster/main/binary-arm64/Packages"
-  debver=$(cat Packages |grep "Package: linux-image-legacy-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
-  debfile=$(cat Packages |grep "Package: linux-image-legacy-rockchip64" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
+  debver=$(cat Packages |grep "Package: linux-image-current-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
+  debfile=$(cat Packages |grep "Package: linux-image-current-rockchip64" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
   kerver=$(echo ${debfile}|cut -d'-' -f2)
-  md5sum=$(cat Packages |grep "Package: linux-image-legacy-rockchip64" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
+  md5sum=$(cat Packages |grep "Package: linux-image-current-rockchip64" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
   imagename=$(echo $debfile|cut -f5 -d'/')
   
   echo "${md5sum}  ${imagename}" > pkg.md5
@@ -54,7 +54,7 @@ prepare() {
 
 pkgver() {
   pkgver=$(cat ${srcdir}/pkgver)
-  printf "%s" ${pkgver}
+  printf "%s" ${pkgver//-/_}
 }
 
 package() {
@@ -66,7 +66,7 @@ package() {
   cd ${pkgdir}/boot
   touch .next
   ln -sf `ls vmlinu*` Image
-  ln -sf /usr/lib/linux-image-legacy-rockchip64 dtb
+  ln -sf /usr/lib/linux-image-current-rockchip64 dtb
   cd "${srcdir}"
   
   #install dtb file for Beikeyun P1

@@ -2,7 +2,7 @@
 
 pkgdesc="Linux firmware from armbian."
 pkgname=linux-firmware-armbian
-pkgver=19.11.9.019
+pkgver=20.05.0_trunk.038
 pkgrel=1
 arch=('any')
 url="https://beta.armbian.com/pool/main/a/armbian-firmware/"
@@ -37,7 +37,7 @@ prepare() {
 
 pkgver() {
   pkgver=$(cat ${srcdir}/pkgver)
-  printf "%s" ${pkgver}
+  printf "%s" ${pkgver//-/_}
 }
 
 package() {

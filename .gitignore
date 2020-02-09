@@ -2,5 +2,3 @@
 *.deb
 src/
 pkg/
-
-linux-aarch64-beikeyun-p1/*.dtb
