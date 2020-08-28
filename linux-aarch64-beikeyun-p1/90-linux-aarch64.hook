@@ -1,7 +1,7 @@
 [Trigger]
 Operation = Install
 Operation = Upgrade
-Type = File
+Type = Path
 Target = boot/Image
 Target = boot/vmlinuz-*
 Target = boot/vmlinux-*

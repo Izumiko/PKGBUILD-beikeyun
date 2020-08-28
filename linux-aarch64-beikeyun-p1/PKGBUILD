@@ -2,11 +2,11 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
 pkgname=linux-aarch64-current-beikeyun-p1
-pkgver=5.4.18_20.05.0_trunk.038
+pkgver=5.7.15_20.08
 pkgrel=1
 pkgdesc="The Linux Kernel and modules - AArch64 for Beikeyun P1. This package will fetch a Debian built kernel from armbian."
 arch=('aarch64')
-url="https://beta.armbian.com/pool/main/l/"
+url="https://mirrors.tuna.tsinghua.edu.cn/armbian/pool/main/l/"
 license=('GPL')
 options=('!strip')
 depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
@@ -17,21 +17,25 @@ replaces=('linux-armv8')
 backup=("etc/mkinitcpio.d/${pkgname}.preset")
 install=${pkgname}.install
 
-source=('rk3328-beikeyun.dtb'
+source=('rk3328-beikeyun-1200mhz.dtb'
+        'rk3328-beikeyun-1296mhz.dtb'
+        'rk3328-beikeyun-1392mhz.dtb'
         'linux-aarch64.preset'
         '60-linux-aarch64.hook'
         '90-linux-aarch64.hook'
         'linux-aarch64-current-beikeyun-p1.install')
-sha256sums=('94f399c3e16f3a7f22b356cd5a101599f58ed9371f9b2217c178a5be2e2acae2'
-            '418ed75bc8f03f401dccd28adae4a22e70fe9e48f1b26dcf7e6857d6f0d6e8b3'
-            '6e5459a508d26fd96ac8f675a537f21ab3a2624adc1e99ee64944b2db4c911f5'
-            'ece886d2313bc47934c5782c8ff6034348cf2ff38ad2f3fdbabef592fc8d54eb'
-            '617a207cb6386056040cdcb2a946fdae5dd0ac44c702217e6f9b7c4049e38a10')
+sha256sums=('f482d98fb4dac30fbab34238bd5f5eb464a26944662d5ce8997c1d5f0a4b9122'
+            '34f8c63d905643ad3582e39f2f1c7434f8e20ece0643c1b998076dc180cd4ab6'
+            'c6c91e0001e8ffd4c02ee6b216f5e6bd1c7e93a63bfdb96c243ccc5b6fcd9497'
+            '1b7d0e099b28a325c0468ad22f32caf9266c943a3af06ffffe84b8d058301874'
+            'b5ca41cf346f648592ab057c1485b625fe9d947ac3a36a472f498a34fe3040d8'
+            '9d502526f4ce65ddb7efde85309d37593aa2c825aa9d630c676d4c4884a6d25b'
+            'ca3d0e67f751d3764f4dd8897a3e8fbc1bd2028472a97b2eefc4981c98a90fc8')
 
 
 prepare() {
   cd "${srcdir}"
-  wget -O Packages "https://beta.armbian.com/dists/buster/main/binary-arm64/Packages"
+  wget -O Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/buster/main/binary-arm64/Packages"
   debver=$(cat Packages |grep "Package: linux-image-current-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
   debfile=$(cat Packages |grep "Package: linux-image-current-rockchip64" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
   kerver=$(echo ${debfile}|cut -d'-' -f2)
@@ -42,7 +46,7 @@ prepare() {
   echo "${kerver}_${debver}" > pkgver
   
   #download package
-  wget -O ${imagename} "https://beta.armbian.com/${debfile}"
+  wget -O ${imagename} "https://mirrors.tuna.tsinghua.edu.cn/armbian/${debfile}"
   md5sum -c pkg.md5 || exit -1
   rm Packages pkg.md5
 
@@ -61,16 +65,18 @@ package() {
   kerver=$(echo ${pkgver}|cut -f1 -d'_')
   cd "${srcdir}"
 
+  #install dtb file for Beikeyun P1
+  install -D -m644 "${srcdir}/rk3328-beikeyun-1200mhz.dtb" "${pkgdir}/boot/rk3328-beikeyun-1200mhz.dtb"
+  install -D -m644 "${srcdir}/rk3328-beikeyun-1296mhz.dtb" "${pkgdir}/boot/rk3328-beikeyun-1296mhz.dtb"
+  install -D -m644 "${srcdir}/rk3328-beikeyun-1392mhz.dtb" "${pkgdir}/boot/rk3328-beikeyun-1392mhz.dtb"
+
   # copy boot files  
-  cp -r boot "${pkgdir}/boot"
+  cp -r boot/* "${pkgdir}/boot/"
   cd ${pkgdir}/boot
-  touch .next
   ln -sf `ls vmlinu*` Image
   ln -sf /usr/lib/linux-image-current-rockchip64 dtb
+  ln -sf rk3328-beikeyun-1200mhz.dtb rk3328-beikeyun.dtb
   cd "${srcdir}"
-  
-  #install dtb file for Beikeyun P1
-  install -D -m644 "${srcdir}/rk3328-beikeyun.dtb" "${pkgdir}/boot/rk3328-beikeyun.dtb"
 
   # copy kernel files
   mkdir -p "${pkgdir}/usr"

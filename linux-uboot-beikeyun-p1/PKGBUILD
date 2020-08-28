@@ -1,11 +1,11 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
 pkgname=linux-uboot-beikeyun-p1-current
-pkgver=2017.09_20.05.0_trunk.038
+pkgver=2017.09_20.08
 pkgrel=1
 pkgdesc="U-Boot loader and files for Beikeyun P1. This package will fetch a Debian built uboot from armbian."
 arch=('aarch64')
-url="https://beta.armbian.com/pool/main/l/linux-u-boot-rock64-current/"
+url="https://mirrors.tuna.tsinghua.edu.cn/armbian/pool/main/l/linux-u-boot-rock64-current/"
 license=('GPL')
 options=('!strip')
 optdepends=('uboot-tools')
@@ -21,7 +21,7 @@ md5sums=('75f122140ce31c9724105bd030b8c289'
 prepare() {
   cd "${srcdir}"
 
-  wget -O Packages "https://beta.armbian.com/dists/buster/main/binary-arm64/Packages"
+  wget -O Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/buster/main/binary-arm64/Packages"
   debver=$(cat Packages |grep "Package: linux-u-boot-rock64-current" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
   debfile=$(cat Packages |grep "Package: linux-u-boot-rock64-current" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
   md5sum=$(cat Packages |grep "Package: linux-u-boot-rock64-current" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
@@ -31,7 +31,7 @@ prepare() {
   echo "${debver}" > pkgver
   
   #download package
-  wget -O ${imagename} "https://beta.armbian.com/${debfile}"
+  wget -O ${imagename} "https://mirrors.tuna.tsinghua.edu.cn/armbian/${debfile}"
   md5sum -c pkg.md5 || exit -1
   rm Packages pkg.md5
   

@@ -2,10 +2,10 @@
 
 pkgdesc="Linux firmware from armbian."
 pkgname=linux-firmware-armbian
-pkgver=20.05.0_trunk.038
+pkgver=20.08
 pkgrel=1
 arch=('any')
-url="https://beta.armbian.com/pool/main/a/armbian-firmware/"
+url="https://mirrors.tuna.tsinghua.edu.cn/armbian/pool/main/a/armbian-firmware/"
 license=('GPL2')
 options=('!strip')
 provides=("linux-firmware=${pkgver}")
@@ -15,7 +15,7 @@ conflicts=('linux-firmware')
 prepare() {
   cd "${srcdir}"
   
-  wget -O Packages "https://beta.armbian.com/dists/buster/main/binary-arm64/Packages"
+  wget -O Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/buster/main/binary-arm64/Packages"
   debver=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
   debfile=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
   md5sum=$(cat Packages |grep "Package: armbian-firmware$" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
@@ -25,7 +25,7 @@ prepare() {
   echo "${debver}" > pkgver
   
   #download package
-  wget -O ${imagename} "https://beta.armbian.com/${debfile}"
+  wget -O ${imagename} "https://mirrors.tuna.tsinghua.edu.cn/armbian/${debfile}"
   md5sum -c pkg.md5 || exit -1
   rm Packages pkg.md5
 
@@ -45,4 +45,5 @@ package() {
   cp -r "${srcdir}/lib" "${pkgdir}/usr/"
 
 }
+
 
