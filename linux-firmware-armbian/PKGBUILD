@@ -8,6 +8,7 @@ arch=('any')
 url="https://mirrors.tuna.tsinghua.edu.cn/armbian/pool/main/a/armbian-firmware/"
 license=('GPL2')
 options=('!strip')
+makedepends=('curl')
 provides=("linux-firmware=${pkgver}")
 conflicts=('linux-firmware')
 
@@ -15,7 +16,7 @@ conflicts=('linux-firmware')
 prepare() {
   cd "${srcdir}"
   
-  wget -O Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/buster/main/binary-arm64/Packages"
+  curl -o Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/buster/main/binary-arm64/Packages"
   debver=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
   debfile=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
   md5sum=$(cat Packages |grep "Package: armbian-firmware$" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
@@ -25,14 +26,14 @@ prepare() {
   echo "${debver}" > pkgver
   
   #download package
-  wget -O ${imagename} "https://mirrors.tuna.tsinghua.edu.cn/armbian/${debfile}"
+  curl -o ${imagename} "https://mirrors.tuna.tsinghua.edu.cn/armbian/${debfile}"
   md5sum -c pkg.md5 || exit -1
   rm Packages pkg.md5
 
   # extract the prebuilt kernel files
   ar xf "${imagename}"
   tar -xf data.tar.xz
-  rm ${imagename} data.tar.xz
+  rm ${imagename} data.tar.xz debian-binary control.tar.xz
 }
 
 pkgver() {
