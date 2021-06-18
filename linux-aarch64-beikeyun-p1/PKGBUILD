@@ -2,7 +2,7 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
 pkgname=linux-aarch64-current-beikeyun-p1
-pkgver=5.10.35_21.05.1
+pkgver=5.10.43_21.05.4
 pkgrel=1
 pkgdesc="The Linux Kernel and modules - AArch64 for Beikeyun P1. This package will fetch a Debian built kernel from armbian."
 arch=('aarch64')
@@ -26,14 +26,14 @@ source=('rk3328-beikeyun-1200mhz.dtb'
         '60-linux-aarch64.hook'
         '90-linux-aarch64.hook'
         'linux-aarch64-current-beikeyun-p1.install')
-sha256sums=('6421da82fbb4cd9f4418f119b43ad97b5b6922a878c6617529a976f8887a7384'
-            '2adf9e3759ce5d8fbec0aa700369a3edf96e82d8b208b7bd3953a78061079179'
-            '4b30e60c0d6497f8120d5bd5a85b549d43b634968ad9007691a5b9e0eac36af6'
-            '1f3d61a9dc891d5c9c88340f62b5a21002bbbd6c4da05e3770117777bcd1bd6f'
+sha256sums=('3c73bbb88cfa7d9414539b3b096ebf349be251f24b13ef132eb6f67431367a36'
+            '47354fe82bf73d64b0d40e67a40195459cac6bc2f85fc3496fa4d8f4816175cd'
+            'ad4aecb98ffa4fe68a207743aaf903c1bf2f468f025c028274be67c946849150'
+            '869483851e6e7cb41e150899b7cd7da40fbd0b8441d2d8194994e584345e4c27'
             '687794769ceffd26c1f6505d3ae209cf5ad7a43a8439fa131d388293fada6a8b'
             'b5ca41cf346f648592ab057c1485b625fe9d947ac3a36a472f498a34fe3040d8'
             '9d502526f4ce65ddb7efde85309d37593aa2c825aa9d630c676d4c4884a6d25b'
-            '4e65c7f50b4abf97be1b0eddb0ad71c5c57bc1d9550805d068cb5e16c6f59848')
+            '9a7253e95839077ebf7c5b717c38f8acfb08d14977c7b597b0478a895882e29c')
 
 
 prepare() {
