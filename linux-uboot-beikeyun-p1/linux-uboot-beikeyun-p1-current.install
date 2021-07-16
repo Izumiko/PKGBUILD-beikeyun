@@ -12,9 +12,9 @@ flash_uboot () {
         dd if=/boot/u-boot.itb of=/dev/mmcblk0 seek=16384 conv=notrunc status=none > /dev/null 2>&1
     else
         if [[ -f /boot/uboot.img ]]; then
-            dd if=/boot/idbloader.bin of=/dev/mmcblk0 seek=64 conv=notrunc status=none > /dev/null 2>&1
+            dd if=/boot/idbloader.img of=/dev/mmcblk0 seek=64 conv=notrunc status=none > /dev/null 2>&1
             dd if=/boot/uboot.img of=/dev/mmcblk0 seek=16384 conv=notrunc status=none > /dev/null 2>&1
-            dd if=/boot/trust.bin of=/dev/mmcblk0 seek=24576 conv=notrunc status=none > /dev/null 2>&1
+            dd if=/boot/trust.img of=/dev/mmcblk0 seek=24576 conv=notrunc status=none > /dev/null 2>&1
         else
             echo "Unsupported u-boot processing configuration!"
             exit 1
@@ -27,9 +27,9 @@ flash_uboot () {
         echo "# dd if=/boot/u-boot.itb of=/dev/mmcblk0 seek=16384 conv=notrunc status=none"
     else
         if [[ -f /boot/uboot.img ]]; then
-            echo "# dd if=/boot/idbloader.bin of=/dev/mmcblk0 seek=64 conv=notrunc status=none"
+            echo "# dd if=/boot/idbloader.img of=/dev/mmcblk0 seek=64 conv=notrunc status=none"
             echo "# dd if=/boot/uboot.img of=/dev/mmcblk0 seek=16384 conv=notrunc status=none"
-            echo "# dd if=/boot/trust.bin of=/dev/mmcblk0 seek=24576 conv=notrunc status=none"
+            echo "# dd if=/boot/trust.img of=/dev/mmcblk0 seek=24576 conv=notrunc status=none"
         else
             echo "Unsupported u-boot processing configuration!"
             exit 1

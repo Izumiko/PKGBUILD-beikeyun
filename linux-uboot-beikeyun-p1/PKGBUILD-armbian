@@ -1,0 +1,69 @@
+# PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
+
+pkgname=linux-uboot-beikeyun-p1-current
+pkgver=2020.10_21.05.1
+pkgrel=1
+pkgdesc="U-Boot loader and files for Beikeyun P1. This package will fetch a Debian built uboot from armbian."
+arch=('aarch64')
+url="https://mirrors.tuna.tsinghua.edu.cn/armbian/pool/main/l/linux-u-boot-rock64-current/"
+license=('GPL')
+options=('!strip')
+makedepends=('curl')
+optdepends=('uboot-tools')
+provides=("uboot-beikeyun-p1=${pkgver}")
+conflicts=('uboot-rock64' 'linux-uboot-beikeyun-p1' 'uboot-beikeyun-p1')
+install=${pkgname}.install
+backup=('boot/extlinux/extlinux.conf')
+source=('linux-uboot-beikeyun-p1-current.install'
+        'extlinux.conf')
+md5sums=('12ea8870fd5a2b045f285f78a167fbf4'
+         'c807bf9bcf3c539e6cad8f57d408f583')
+
+prepare() {
+  cd "${srcdir}"
+
+  curl -o Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/buster/main/binary-arm64/Packages"
+  debver=$(cat Packages |grep "Package: linux-u-boot-rock64-current" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
+  debfile=$(cat Packages |grep "Package: linux-u-boot-rock64-current" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
+  md5sum=$(cat Packages |grep "Package: linux-u-boot-rock64-current" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
+  imagename=$(echo $debfile|cut -f5 -d'/')
+  
+  echo "${md5sum}  ${imagename}" > pkg.md5
+  echo "${debver}" > pkgver
+  
+  #download package
+  curl -o ${imagename} "https://mirrors.tuna.tsinghua.edu.cn/armbian/${debfile}"
+  md5sum -c pkg.md5 || exit -1
+  rm Packages pkg.md5
+  
+  # extract the prebuilt kernel files
+  ar xf "${imagename}"
+  tar xf data.tar.xz
+  tar xf control.tar.xz
+  rm ${imagename} data.tar.xz control.tar.xz debian-binary
+}
+
+pkgver() {
+  cd "${srcdir}"
+  ubver=$(cat control | grep -P '\d{4}\.\d{2}' -o)
+  pkgver=$(cat ${srcdir}/pkgver)
+  pkgver=${pkgver//-/_}
+  if [ x$ubver != x"" ]; then
+    printf "%s_%s" ${ubver} ${pkgver}
+  else
+    printf "%s" ${pkgver}
+  fi
+}
+
+package() {
+  cd "${srcdir}"
+
+  # copy extlinux config
+  mkdir -p "${pkgdir}/boot/extlinux"
+  cp "${srcdir}/extlinux.conf" "${pkgdir}/boot/extlinux/"
+  
+  # copy uboot image files
+  cp usr/lib/linux-u-boot-current-rock64_*_arm64/* "${pkgdir}/boot/"
+
+}
+

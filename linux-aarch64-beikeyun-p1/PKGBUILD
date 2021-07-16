@@ -1,8 +1,8 @@
 # AArch64 multi-platform
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
-pkgname=linux-aarch64-current-beikeyun-p1
-pkgver=5.10.43_21.05.4
+pkgname=linux-aarch64-edge-beikeyun-p1
+pkgver=5.12.10_21.05.4
 pkgrel=1
 pkgdesc="The Linux Kernel and modules - AArch64 for Beikeyun P1. This package will fetch a Debian built kernel from armbian."
 arch=('aarch64')
@@ -15,7 +15,7 @@ optdepends=('uboot-tools')
 provides=("linux=${pkgver}" "linux-aarch64=${pkgver}")
 conflicts=('linux' 'linux-aarch64' 'linux-aarch64-rc' 'linux-aarch64-beikeyun-p1')
 replaces=('linux-armv8')
-backup=("etc/mkinitcpio.d/${pkgname}.preset")
+backup=("etc/mkinitcpio.d/${pkgname}.preset" "boot/rk3328-beikeyun.dtb")
 install=${pkgname}.install
 
 source=('rk3328-beikeyun-1200mhz.dtb'
@@ -25,24 +25,24 @@ source=('rk3328-beikeyun-1200mhz.dtb'
         'linux-aarch64.preset'
         '60-linux-aarch64.hook'
         '90-linux-aarch64.hook'
-        'linux-aarch64-current-beikeyun-p1.install')
-sha256sums=('3c73bbb88cfa7d9414539b3b096ebf349be251f24b13ef132eb6f67431367a36'
-            '47354fe82bf73d64b0d40e67a40195459cac6bc2f85fc3496fa4d8f4816175cd'
-            'ad4aecb98ffa4fe68a207743aaf903c1bf2f468f025c028274be67c946849150'
-            '869483851e6e7cb41e150899b7cd7da40fbd0b8441d2d8194994e584345e4c27'
+        'linux-aarch64-edge-beikeyun-p1.install')
+sha256sums=('f2e9d8576940873fc8427c04fd2eebbcf5e1bca7e7c1f03b4330eee38435c8ae'
+            'd00c8e68a7149181e1b7f58e855cf0e8a594ef33fb2b3db27f3a2e5c77df453f'
+            '2851c2f94a5635299136c210011631fb34d8f5c7863e3f32e09133f84d0c758a'
+            '93dd2c878ac7ff7c5a7af75fc8af45df9399b5711d3ad7bd542255bce69b535f'
             '687794769ceffd26c1f6505d3ae209cf5ad7a43a8439fa131d388293fada6a8b'
             'b5ca41cf346f648592ab057c1485b625fe9d947ac3a36a472f498a34fe3040d8'
             '9d502526f4ce65ddb7efde85309d37593aa2c825aa9d630c676d4c4884a6d25b'
-            '9a7253e95839077ebf7c5b717c38f8acfb08d14977c7b597b0478a895882e29c')
+            '58c0c44056270d5c17d16a86e8654a47188672f64db84e180697782f3ad69601')
 
 
 prepare() {
   cd "${srcdir}"
   curl -o Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/buster/main/binary-arm64/Packages"
-  debver=$(cat Packages |grep "Package: linux-image-current-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
-  debfile=$(cat Packages |grep "Package: linux-image-current-rockchip64" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
+  debver=$(cat Packages |grep "Package: linux-image-edge-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
+  debfile=$(cat Packages |grep "Package: linux-image-edge-rockchip64" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
   kerver=$(echo ${debfile}|cut -d'-' -f2)
-  md5sum=$(cat Packages |grep "Package: linux-image-current-rockchip64" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
+  md5sum=$(cat Packages |grep "Package: linux-image-edge-rockchip64" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
   imagename=$(echo $debfile|cut -f5 -d'/')
   
   echo "${md5sum}  ${imagename}" > pkg.md5
@@ -74,19 +74,16 @@ package() {
   install -D -m644 "${srcdir}/rk3328-beikeyun-1392mhz.dtb" "${pkgdir}/boot/rk3328-beikeyun-1392mhz.dtb"
   install -D -m644 "${srcdir}/rk3328-beikeyun-1512mhz.dtb" "${pkgdir}/boot/rk3328-beikeyun-1512mhz.dtb"
 
-  # copy boot files  
-  cp -r boot/* "${pkgdir}/boot/"
+  # copy boot files
+  mv boot/* "${pkgdir}/boot/"
   cd ${pkgdir}/boot
   ln -sf `ls vmlinu*` Image
-  ln -sf /usr/lib/linux-image-current-rockchip64 dtb
+  ln -sf /usr/lib/linux-image-edge-rockchip64 dtb
   ln -sf rk3328-beikeyun-1296mhz.dtb rk3328-beikeyun.dtb
   cd "${srcdir}"
 
   # copy kernel files
-  mkdir -p "${pkgdir}/usr"
-  mkdir -p "${pkgdir}/lib"
-  cp -r usr "${pkgdir}/"
-  cp -r lib "${pkgdir}/"
+  mv usr lib "${pkgdir}/"
   
   # set correct depmod command for install
   sed -e  "s/KERNEL_VERSION=.*/KERNEL_VERSION=${kerver}-rockchip64/g" -i "${startdir}/${pkgname}.install"
@@ -105,13 +102,12 @@ package() {
   sed "s|%PKGVER%|${kerver}-rockchip64|g" -i "${pkgdir}/usr/share/libalpm/hooks/60-${pkgname}.hook"
   sed "s|%PKGNAME%|${pkgname}|g" -i "${pkgdir}/usr/share/libalpm/hooks/90-${pkgname}.hook"
 
+  cd "${pkgdir}"
   # Now we call depmod...
-  depmod -b "$pkgdir" -F "boot/System.map-${kerver}-rockchip64" "${kerver}-rockchip64"
+  depmod -b "${pkgdir}" -F "boot/System.map-${kerver}-rockchip64" "${kerver}-rockchip64"
 
   # move module tree /lib -> /usr/lib
-  mkdir -p "${pkgdir}/usr"
-  cp -r "$pkgdir/lib" "$pkgdir/usr"
-  rm -rf "$pkgdir/lib"
-
+  mv "${pkgdir}/lib/modules" "${pkgdir}/usr/lib/"
+  rm -rf "${pkgdir}/lib"
 }
 

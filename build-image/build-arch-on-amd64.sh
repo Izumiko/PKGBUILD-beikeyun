@@ -7,7 +7,7 @@
 
 [ "$EUID" != "0" ] && echo "please run as root" && exit 1
 
-rootfs_mount_point="/mnt/arch_rootfs"
+rootfs_mount_point="./arch_rootfs"
 
 tmpdir="tmp"
 output="output"
@@ -15,7 +15,7 @@ output="output"
 origin="latest"
 target="beikeyun-$(date +%Y-%m-%d)"
 
-rootsize=1500
+rootsize=1600
 ROOTOFFSET=32768
 
 qemu_static="./tools/qemu/qemu-aarch64-static.gz"
@@ -23,18 +23,22 @@ qemu_static="./tools/qemu/qemu-aarch64-static.gz"
 func_generate() {
 	local rootfs=$1
 	local img_new=${2:-archlinux.img}
+	mkdir -p ${output}
 
 	[ ! -f "$rootfs" ] && echo "archlinux rootfs file not found!" && return 1
 
 	# create ext4 rootfs img
 	mkdir -p ${tmpdir}
-	echo "create ext4 rootfs, size: ${rootsize}M"
-	dd if=/dev/zero bs=1M status=none count=$rootsize of=$tmpdir/rootfs.img
-	mkfs.ext4 -q -m 2 $tmpdir/rootfs.img
+	echo "create rootfs, size: ${rootsize}M"
+	fallocate -l ${rootsize}M ${output}/${img_new}
+	parted -s ${output}/${img_new} -- mktable gpt
+	parted -s ${output}/${img_new} -- mkpart rootfs ext4 ${ROOTOFFSET}s -1
+	devname=`losetup -P -f --show ${output}/${img_new}`
+	mkfs.ext4 -q -m 2 ${devname}p1
 
 	# mount rootfs
 	mkdir -p $rootfs_mount_point
-	mount -o loop $tmpdir/rootfs.img $rootfs_mount_point
+	mount -o loop ${devname}p1 $rootfs_mount_point
 
 	# extract archlinux rootfs
 	echo "extract archlinux rootfs($rootfs) to $rootfs_mount_point"
@@ -53,7 +57,6 @@ func_generate() {
 	else
 		echo "Could not configure binfmt for qemu!" && exit 1
 	fi
-	
 
 	cp -r ${tmpdir}/pkgs $rootfs_mount_point/root/
 	cp ./tools/archlinux/init.sh $rootfs_mount_point/init.sh
@@ -66,7 +69,6 @@ func_generate() {
 	rm -f $rootfs_mount_point/init.sh
 	[ -n "$qemu" ] && rm -f $rootfs_mount_point/$qemu || rm -f $rootfs_mount_point/usr/bin/qemu-aarch64-static
 
-
 	# add resize script
 	echo "add resize mmc script"
 	cp ./tools/archlinux/resizemmc.service $rootfs_mount_point/lib/systemd/system/
@@ -76,34 +78,29 @@ func_generate() {
 	touch $rootfs_mount_point/.need_resize
 
 	#prepare uboot files
-	cp $rootfs_mount_point/boot/idbloader.bin ${tmpdir}/
-	cp $rootfs_mount_point/boot/uboot.img ${tmpdir}/
-	cp $rootfs_mount_point/boot/trust.bin ${tmpdir}/
-	cp $rootfs_mount_point/boot/idbloader.img ${tmpdir}/
+	cp $rootfs_mount_point/boot/uboot.* ${tmpdir}/uboot.img
+	cp $rootfs_mount_point/boot/trust.* ${tmpdir}/trust.img
+	cp $rootfs_mount_point/boot/idbloader.* ${tmpdir}/idbloader.img
 	cp $rootfs_mount_point/boot/u-boot.itb ${tmpdir}/
 
 	# generate img
 	umount -R $rootfs_mount_point
-	mkdir -p ${output}
 	echo "Generating release image"
-	dd if=/dev/zero bs=512 count=$ROOTOFFSET status=none of=${output}/${img_new}
 	if [[ -f ${tmpdir}/u-boot.itb ]]; then
 		dd if=${tmpdir}/idbloader.img of=${output}/${img_new} seek=64 conv=notrunc status=none > /dev/null 2>&1
 		dd if=${tmpdir}/u-boot.itb of=${output}/${img_new} seek=16384 conv=notrunc status=none > /dev/null 2>&1
 	else
 		if [[ -f ${tmpdir}/uboot.img ]]; then
-			dd if=${tmpdir}/idbloader.bin of=${output}/${img_new} seek=64 conv=notrunc status=none > /dev/null 2>&1
+			dd if=${tmpdir}/idbloader.img of=${output}/${img_new} seek=64 conv=notrunc status=none > /dev/null 2>&1
 			dd if=${tmpdir}/uboot.img of=${output}/${img_new} seek=16384 conv=notrunc status=none > /dev/null 2>&1
-			dd if=${tmpdir}/trust.bin of=${output}/${img_new} seek=24576 conv=notrunc status=none > /dev/null 2>&1
+			dd if=${tmpdir}/trust.img of=${output}/${img_new} seek=24576 conv=notrunc status=none > /dev/null 2>&1
 		else
 			echo "Unsupported u-boot processing configuration!"
 			exit 1
 		fi
 	fi
-	cat $tmpdir/rootfs.img >> ${output}/${img_new}
-	parted -s ${output}/${img_new} -- mklabel msdos
-	parted -s ${output}/${img_new} -- mkpart primary ext4 ${ROOTOFFSET}s -1s
 	sync
+	losetup -d ${devname}
 }
 
 func_release() {

@@ -2,19 +2,19 @@
 
 ## PKGBUILD scripts for archlinuxarm of beikeyun P1
 
-Linux is Rock64's mainline version from Armbian.   
+Linux is Rock64's edge version from Armbian.   
 
 DTB file is from flippy.   
 Related publishing pages:   
 https://www.right.com.cn/forum/thread-4076037-1-1.html
 
-current version is extracted from dtb-rockchip-5.10.44-flippy-61+.tar.gz
+current version is extracted from dtb-rockchip-5.13.2-flippy-62+.tar.gz
 
 ### Build instruction:
 
 0. Install base-devel: 
 ```shell
-# pacman -S base-devel
+# pacman -S base-devel pacman-contrib
 ```
 
 1. Build package:
