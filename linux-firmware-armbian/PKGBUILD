@@ -2,7 +2,7 @@
 
 pkgdesc="Linux firmware from armbian."
 pkgname=linux-firmware-armbian
-pkgver=21.05.4
+pkgver=21.08.2
 pkgrel=1
 arch=('any')
 url="https://mirrors.tuna.tsinghua.edu.cn/armbian/pool/main/a/armbian-firmware/"
@@ -17,7 +17,7 @@ prepare() {
   cd "${srcdir}"
   
   curl -o Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/buster/main/binary-arm64/Packages"
-  debver=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep Filename|cut -f2 -d'_'|sort -r|head -n 1)
+  debver=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep Filename|cut -f2 -d'_'|sort -V -r|head -n 1)
   debfile=$(cat Packages |grep "Package: armbian-firmware$" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
   md5sum=$(cat Packages |grep "Package: armbian-firmware$" -A 16|grep ${debfile} -A 6|grep MD5sum | cut -f2 -d' ')
   imagename=$(echo $debfile|cut -f5 -d'/')
@@ -46,5 +46,6 @@ package() {
   cp -r "${srcdir}/lib" "${pkgdir}/usr/"
 
 }
+
 
 

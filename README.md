@@ -8,7 +8,7 @@ DTB file is from flippy.
 Related publishing pages:   
 https://www.right.com.cn/forum/thread-4076037-1-1.html
 
-current version is extracted from dtb-rockchip-5.13.2-flippy-62+.tar.gz
+current version is extracted from `dtb-rockchip-5.14.1-flippy-64+.tar.gz`
 
 ### Build instruction:
 

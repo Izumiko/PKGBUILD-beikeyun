@@ -15,7 +15,7 @@ output="output"
 origin="latest"
 target="beikeyun-$(date +%Y-%m-%d)"
 
-rootsize=1600
+rootsize=1000
 ROOTOFFSET=32768
 
 func_generate() {
@@ -40,7 +40,7 @@ func_generate() {
 
 	# extract archlinux rootfs
 	echo "extract archlinux rootfs($rootfs) to $rootfs_mount_point"
-	bsdtar -xpf $rootfs -C $rootfs_mount_point
+	bsdtar -xpf $rootfs -C $rootfs_mount_point  --exclude 'boot/*' --exclude 'usr/lib/modules/*' --exclude 'usr/lib/firmware/*'
 
 	# chroot to archlinux rootfs
 	cp -r ${tmpdir}/pkgs $rootfs_mount_point/root/

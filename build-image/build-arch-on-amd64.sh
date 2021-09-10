@@ -15,7 +15,7 @@ output="output"
 origin="latest"
 target="beikeyun-$(date +%Y-%m-%d)"
 
-rootsize=1600
+rootsize=1000
 ROOTOFFSET=32768
 
 qemu_static="./tools/qemu/qemu-aarch64-static.gz"
@@ -42,7 +42,7 @@ func_generate() {
 
 	# extract archlinux rootfs
 	echo "extract archlinux rootfs($rootfs) to $rootfs_mount_point"
-	bsdtar -xpf $rootfs -C $rootfs_mount_point
+	bsdtar -xpf $rootfs -C $rootfs_mount_point --exclude 'boot/*' --exclude 'usr/lib/modules/*' --exclude 'usr/lib/firmware/*'
 
 	# chroot to archlinux rootfs
 	echo "configure binfmt to chroot"
