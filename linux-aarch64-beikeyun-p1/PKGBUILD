@@ -2,7 +2,7 @@
 # PKGBUILD Maintainer: Izumiko <yosoro@outlook.com>
 
 pkgname=linux-aarch64-edge-beikeyun-p1
-pkgver=5.14.2_21.11.0_trunk.3
+pkgver=5.19.5_22.08.1
 pkgrel=1
 pkgdesc="The Linux Kernel and modules - AArch64 for Beikeyun P1. This package will fetch a Debian built kernel from armbian."
 arch=('aarch64')
@@ -26,19 +26,19 @@ source=('rk3328-beikeyun-1200mhz.dtb'
         '60-linux-aarch64.hook'
         '90-linux-aarch64.hook'
         'linux-aarch64-edge-beikeyun-p1.install')
-sha256sums=('d1faa2779208fc69b844e9343b5fd9523c36f40cf20a59e3ef53f2f0604634e9'
-            'f0701d8e0fef522f729343027bfd500724f82a715b9beed399020b66ddc17861'
-            '2b7e857c56c0c36cc145253e4cacdeb98806832117db1f5cdfcfc798044fc3c9'
-            '879c79d34654a83c70b36504f2d9123ee086a54fb9c9b7f47d2c757f24ef1bd6'
+sha256sums=('b2c2025078e4c58c24ed8c100920225968bc13c5a3dce2bd008738774dc0408a'
+            '7453446743c952fafa2f91d6e80a0171e36b7c287d0f0560f2f7d9d740502dc1'
+            '9c970a7c354d258fadf6b9f112bfee4bb59e12ea4ec4341190b2d752291a85a6'
+            '0cb28d91211746adaf3560851cc55be4648053c1203d7dc6a143c24b72a283fe'
             '687794769ceffd26c1f6505d3ae209cf5ad7a43a8439fa131d388293fada6a8b'
             'b5ca41cf346f648592ab057c1485b625fe9d947ac3a36a472f498a34fe3040d8'
             '9d502526f4ce65ddb7efde85309d37593aa2c825aa9d630c676d4c4884a6d25b'
-            '5d6b6deea7224d2d393f37a7b3a2b50c322b0f2d4e199008fc7b7e78a023c590')
+            '0cc1f74e7655980c13af4755aeaa876cf9530ad32317421bfaa8b8bfc6533726')
 
 
 prepare() {
   cd "${srcdir}"
-  curl -o Packages "https://beta.armbian.com/dists/buster/main/binary-arm64/Packages"
+  curl -o Packages "https://mirrors.tuna.tsinghua.edu.cn/armbian/dists/bullseye/main/binary-arm64/Packages"
   debver=$(cat Packages |grep "Package: linux-image-edge-rockchip64" -A 10|grep Filename|cut -f2 -d'_'|sort -V -r|head -n 1)
   debfile=$(cat Packages |grep "Package: linux-image-edge-rockchip64" -A 10|grep ${debver}|grep Filename|cut -f2 -d' ')
   kerver=$(echo ${debfile}|cut -d'-' -f2)
@@ -49,7 +49,7 @@ prepare() {
   echo "${kerver}_${debver}" > pkgver
   
   #download package
-  curl -o ${imagename} "https://beta.armbian.com/${debfile}"
+  curl -o ${imagename} "https://mirrors.tuna.tsinghua.edu.cn/armbian/${debfile}"
   md5sum -c pkg.md5 || exit -1
   rm Packages pkg.md5
 
